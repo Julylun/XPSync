@@ -22,14 +22,21 @@ export function apiRouter(store: Store, hub: Hub, config: Config) {
   });
   router.post('/auth/setup', authLimit, async (req, res) => {
     if (store.hasAdmin()) throw new HttpError(409, 'Setup is already complete');
-    const supplied = Buffer.from(String(req.body?.setupToken ?? '')),
+    if (!config.setupToken)
+      throw new HttpError(
+        503,
+        'Server chưa được cấu hình SETUP_TOKEN. Với Docker Compose, đặt token trong server/.env rồi tạo lại container.',
+      );
+    const supplied = Buffer.from(String(req.body?.setupToken ?? '').trim()),
       expected = Buffer.from(config.setupToken);
     if (
-      !expected.length ||
       supplied.length !== expected.length ||
       !timingSafeEqual(supplied, expected)
     )
-      throw new HttpError(403, 'Invalid setup token');
+      throw new HttpError(
+        403,
+        'Token thiết lập không khớp với SETUP_TOKEN server đang dùng. Với Docker Compose, kiểm tra server/.env rồi chạy docker compose up -d --force-recreate xpsync.',
+      );
     const input = credentials.parse(req.body),
       hash = await hashPassword(input.password),
       adminId = randomUUID();

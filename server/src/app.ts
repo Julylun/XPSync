@@ -20,6 +20,9 @@ export function createApp(config: Config) {
         directives: { 'upgrade-insecure-requests': null, 'connect-src': ["'self'", 'ws:', 'wss:'] },
       },
       strictTransportSecurity: false,
+      // The dashboard supports plain HTTP on LAN and does not require isolation.
+      crossOriginOpenerPolicy: false,
+      originAgentCluster: false,
     }),
   );
   app.use('/api/client', (req, res, next) => {

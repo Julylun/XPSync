@@ -70,7 +70,7 @@ $('auth-form').onsubmit = async (event) => {
     const data = await api(setup ? '/auth/setup' : '/auth/login', {
       username: $('username').value,
       password: $('password').value,
-      ...(setup ? { setupToken: $('setup-token').value } : {}),
+      ...(setup ? { setupToken: $('setup-token').value.trim() } : {}),
     });
     token = data.token;
     sessionStorage.setItem('xpsync-token', token);

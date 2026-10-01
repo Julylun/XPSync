@@ -69,7 +69,7 @@ test('admin lifecycle, protected endpoints, key hashing, project CRUD and valida
   const setup = await request('/auth/setup', {
     username: 'admin',
     password: 'long-test-password',
-    setupToken: config.setupToken,
+    setupToken: `  ${config.setupToken}\n`,
   });
   assert.equal(setup.status, 201);
   token = (await setup.json()).token;
@@ -100,6 +100,21 @@ test('admin lifecycle, protected endpoints, key hashing, project CRUD and valida
   assert.equal(page.status, 200);
   assert.ok((await page.text()).includes('XPSync'));
   assert.ok(page.headers.get('content-security-policy'));
+  assert.equal(page.headers.get('cross-origin-opener-policy'), null);
+  assert.equal(page.headers.get('origin-agent-cluster'), null);
+});
+test('missing setup token reports configuration failure without creating an admin', async (t) => {
+  const app = createApp({ ...config, setupToken: '' });
+  const port = await app.listen();
+  t.after(() => app.close());
+  const response = await fetch(`http://127.0.0.1:${port}/api/auth/setup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: 'admin', password: 'long-test-password', setupToken: '' }),
+  });
+  assert.equal(response.status, 503);
+  assert.match((await response.json()).error, /server\/\.env/);
+  assert.equal(app.store.hasAdmin(), false);
 });
 test('WebSocket authentication, room isolation, ack, no self-echo, snapshot and key revocation', async (t) => {
   const app = createApp(config),

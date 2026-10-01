@@ -42,6 +42,14 @@ Sau khi sửa mã nguồn, chạy lại `docker compose up -d --build`. Sau khi 
 
 Để sao lưu volume, dừng dịch vụ bằng `docker compose stop xpsync` trước khi sao chép database, rồi chạy lại bằng `docker compose start xpsync`; lưu cả cấu hình `server/.env` ở nơi an toàn.
 
+Nếu tạo admin bị `403`, token nhập vào không khớp với token server đang dùng. Secret phải nằm trong **`server/.env`**, không phải `.env` ở thư mục gốc. Sau khi sửa, chạy `docker compose up -d --force-recreate xpsync`; `docker compose restart` không nạp lại biến môi trường. Có thể kiểm tra token trong container có khớp với file mà không in secret ra màn hình (shell Linux):
+
+```sh
+docker compose exec -T xpsync node --input-type=module -e 'import {parseEnv} from "node:util"; let input=""; for await (const chunk of process.stdin) input+=chunk; const expected=parseEnv(input).SETUP_TOKEN; const actual=process.env.SETUP_TOKEN; console.log(!actual ? "SETUP_TOKEN is missing in container" : actual === expected ? "SETUP_TOKEN matches server/.env" : "SETUP_TOKEN differs from server/.env");' < server/.env
+```
+
+Token chỉ dùng cho lần tạo admin đầu tiên; nếu đã có admin, API trả `409` và cần đăng nhập. Không xóa volume để sửa token.
+
 ## Kết nối Super Productivity
 
 1. Trong dashboard chọn **Tạo dự án**, nhập tên và mô tả, sao chép API key. Key chỉ được hiển thị lúc tạo/đổi; server lưu SHA-256 của key, không lưu key gốc.
