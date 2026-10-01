@@ -17,6 +17,31 @@ Mở **http://127.0.0.1:3001/admin/**. Đọc `SETUP_TOKEN` trong `server/.env`,
 
 `npm run setup` tạo secret ngẫu nhiên và không ghi đè `.env` có sẵn. Khi phát triển dùng `npm run dev`. Nếu đang đứng trong `server/`, có thể dùng `npm run dev`, `npm test`, `npm run build` và `npm start` trực tiếp.
 
+## Chạy bằng Docker Compose
+
+Yêu cầu Docker Engine hoặc Docker Desktop đang chạy, kèm Docker Compose v2. Tại thư mục gốc:
+
+```sh
+node server/setup.mjs
+docker compose up -d --build
+docker compose ps
+```
+
+Lệnh setup tạo `server/.env` với secret ngẫu nhiên nếu chưa có file; không cần cài npm dependencies trên máy chủ. Mở **http://localhost:3001/admin/** và dùng `SETUP_TOKEN` trong `server/.env` để tạo admin đầu tiên. Nếu đã có `.env`, kiểm tra `JWT_SECRET` là giá trị ngẫu nhiên hợp lệ.
+
+Compose đọc `server/.env`, đặt `HOST=0.0.0.0`, cổng trong container là `3001` và lưu SQLite trong named volume `xpsync-data`. Dữ liệu vẫn còn khi tạo lại container hoặc chạy `docker compose down`. `docker compose down -v` sẽ xóa volume và toàn bộ dữ liệu trong đó. Database cũ ở `server/data/` không tự được nhập vào volume.
+
+Mặc định cổng được mở trên mọi địa chỉ của máy chủ để phục vụ LAN. Có thể đặt `XPSYNC_PORT=3002` để đổi cổng ngoài, hoặc `XPSYNC_BIND_ADDRESS=127.0.0.1` khi dùng reverse proxy trên cùng máy. Đặt các biến này trong môi trường shell hoặc file `.env` ở thư mục gốc; cấu hình ứng dụng và secret vẫn nằm trong `server/.env`. Triển khai Internet cần reverse proxy HTTPS hỗ trợ WebSocket như hướng dẫn bên dưới.
+
+```sh
+docker compose logs -f xpsync
+docker compose down
+```
+
+Sau khi sửa mã nguồn, chạy lại `docker compose up -d --build`. Sau khi sửa `server/.env`, chạy `docker compose up -d --force-recreate`. Image chỉ chứa server và dashboard; đóng gói plugin trên máy phát triển bằng `npm ci` rồi `npm run build -w plugin` để lấy `plugin/xpsync.zip`.
+
+Để sao lưu volume, dừng dịch vụ bằng `docker compose stop xpsync` trước khi sao chép database, rồi chạy lại bằng `docker compose start xpsync`; lưu cả cấu hình `server/.env` ở nơi an toàn.
+
 ## Kết nối Super Productivity
 
 1. Trong dashboard chọn **Tạo dự án**, nhập tên và mô tả, sao chép API key. Key chỉ được hiển thị lúc tạo/đổi; server lưu SHA-256 của key, không lưu key gốc.

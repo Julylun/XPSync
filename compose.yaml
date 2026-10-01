@@ -1,0 +1,21 @@
+services:
+  xpsync:
+    build: .
+    image: xpsync:local
+    init: true
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3001"
+      DB_PATH: /app/server/data/xpsync.db
+    ports:
+      - "${XPSYNC_BIND_ADDRESS:-0.0.0.0}:${XPSYNC_PORT:-3001}:3001"
+    volumes:
+      - xpsync-data:/app/server/data
+    stop_grace_period: 30s
+
+volumes:
+  xpsync-data:
