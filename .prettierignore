@@ -1,0 +1,9 @@
+node_modules
+.npm-cache
+server/dist
+plugin/plugin.js
+plugin/index.html
+plugin/xpsync.zip
+plan.md
+package-lock.json
+artifacts

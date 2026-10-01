@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>XPSync · Team workspace</title>
+    <link rel="stylesheet" href="/admin/admin.css" />
+    <script src="/admin/admin.js" defer></script>
+  </head>
+  <body>
+    <div id="toast" role="status" hidden></div>
+    <section id="auth" class="auth-wrap">
+      <div class="auth-card">
+        <div class="brand"><span class="mark">X</span> XPSync</div>
+        <p class="eyebrow">SUPER PRODUCTIVITY, TOGETHER</p>
+        <h1 id="auth-title">Chào mừng trở lại.</h1>
+        <p class="muted" id="auth-description">
+          Đăng nhập để quản lý không gian làm việc của nhóm.
+        </p>
+        <form id="auth-form">
+          <label
+            >Tên quản trị viên<input
+              id="username"
+              required
+              maxlength="80"
+              autocomplete="username" /></label
+          ><label
+            >Mật khẩu<input
+              id="password"
+              type="password"
+              required
+              minlength="12"
+              maxlength="256"
+              autocomplete="current-password" /></label
+          ><label id="setup-label" hidden
+            >Token thiết lập<input id="setup-token" type="password" autocomplete="off" /><small
+              >Giá trị SETUP_TOKEN trong cấu hình server.</small
+            ></label
+          ><button class="primary" id="auth-submit">Đăng nhập</button>
+          <p id="auth-error" class="error" role="alert"></p>
+        </form>
+        <div class="auth-foot">Một nơi kết nối mọi công việc.</div>
+      </div>
+    </section>
+    <div id="workspace" hidden>
+      <aside>
+        <div class="brand"><span class="mark">X</span> XPSync</div>
+        <p class="eyebrow">WORKSPACE</p>
+        <div class="nav-active">◈ &nbsp; Dự án của nhóm</div>
+        <div class="sidebar-bottom">
+          <span id="live" class="badge">Đang kết nối</span>
+          <p>Super Productivity<br /><small>Realtime team sync · v1.0</small></p>
+          <button id="logout" class="quiet">Đăng xuất ↗</button>
+        </div>
+      </aside>
+      <main>
+        <header>
+          <div>
+            <p class="eyebrow">TEAM OVERVIEW</p>
+            <h1>Cùng nhau, đúng nhịp.</h1>
+            <p class="muted">Theo dõi công việc và kết nối của cả nhóm trong thời gian thực.</p>
+          </div>
+          <button id="new-project" class="primary">＋ Tạo dự án</button>
+        </header>
+        <section class="stats" aria-label="Tổng quan">
+          <article>
+            <span>Dự án</span><strong id="project-count">0</strong
+            ><small>Không gian làm việc</small>
+          </article>
+          <article>
+            <span>Công việc</span><strong id="task-count">0</strong
+            ><small>Đã đồng bộ với server</small>
+          </article>
+          <article>
+            <span>Đang kết nối</span><strong id="user-count">0</strong
+            ><small>Thành viên theo dự án</small>
+          </article>
+        </section>
+        <div class="section-heading">
+          <h2>Dự án của bạn</h2>
+          <span class="muted">Cập nhật trực tiếp</span>
+        </div>
+        <section id="projects" class="projects"></section>
+        <section id="inspector" hidden>
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PROJECT INSPECTOR</p>
+              <h2 id="project-title"></h2>
+              <p id="project-description" class="muted"></p>
+            </div>
+            <div class="actions">
+              <button id="edit-project">Sửa</button><button id="rotate-key">Đổi API key</button
+              ><button id="delete-project" class="danger">Xóa dự án</button>
+            </div>
+          </div>
+          <p id="online-users" class="muted"></p>
+          <div class="monitor-grid">
+            <article class="panel">
+              <div class="section-heading">
+                <h3>Công việc</h3>
+                <select id="filter" aria-label="Lọc trạng thái">
+                  <option value="all">Tất cả</option>
+                  <option value="active">Đang làm</option>
+                  <option value="done">Đã hoàn thành</option>
+                </select>
+              </div>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Công việc</th>
+                      <th>Thời gian</th>
+                      <th>Cập nhật cuối</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tasks"></tbody>
+                </table>
+              </div>
+              <p id="tasks-empty" class="empty" hidden>
+                Chưa có công việc. Kết nối plugin để bắt đầu đồng bộ.
+              </p>
+            </article>
+            <article class="panel">
+              <h3>Hoạt động gần đây</h3>
+              <ol id="activity" class="activity"></ol>
+            </article>
+          </div>
+        </section>
+        <footer>XPSync <span>Đồng bộ nhẹ nhàng. Làm việc tập trung.</span></footer>
+      </main>
+    </div>
+    <dialog id="project-dialog">
+      <form id="project-form">
+        <p class="eyebrow">TEAM WORKSPACE</p>
+        <h2 id="project-dialog-title">Tạo dự án mới</h2>
+        <label
+          >Tên dự án<input
+            id="project-name"
+            required
+            maxlength="120"
+            placeholder="Ví dụ: Website mùa thu" /></label
+        ><label
+          >Mô tả<textarea
+            id="description"
+            maxlength="2000"
+            rows="3"
+            placeholder="Mục tiêu của nhóm..."
+          ></textarea>
+        </label>
+        <div class="actions">
+          <button type="button" id="cancel-project">Hủy</button
+          ><button class="primary">Lưu dự án</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="key-dialog">
+      <p class="eyebrow">PROJECT API KEY</p>
+      <h2>Kết nối nhóm của bạn.</h2>
+      <p>
+        Gửi key này cho thành viên để ghép nối trong plugin.<br />Key chỉ hiển thị lần này; server
+        chỉ lưu mã băm.
+      </p>
+      <input id="new-key" readonly type="password" aria-label="API key mới" />
+      <div class="actions">
+        <button id="show-key">Hiện / Ẩn</button
+        ><button id="copy-key" class="primary">Sao chép</button
+        ><button id="close-key">Đã lưu key</button>
+      </div>
+    </dialog>
+  </body>
+</html>

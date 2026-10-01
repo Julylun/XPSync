@@ -1,0 +1,22 @@
+{
+  "id": "xpsync-realtime",
+  "name": "XPSync Realtime Tasks",
+  "version": "1.0.0",
+  "description": "Đồng bộ công việc theo nhóm với XPSync qua WebSocket.",
+  "manifestVersion": 1,
+  "minSupVersion": "14.0.0",
+  "icon": "icon.svg",
+  "iFrame": true,
+  "sidePanel": false,
+  "permissions": [
+    "getTasks",
+    "getArchivedTasks",
+    "addTask",
+    "updateTask",
+    "deleteTask",
+    "getAllProjects",
+    "addProject",
+    "batchUpdateForProject"
+  ],
+  "hooks": ["taskComplete", "taskUpdate", "taskDelete", "action"]
+}

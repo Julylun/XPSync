@@ -1,0 +1,23 @@
+{
+  "name": "xpsync",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "plugin"
+  ],
+  "scripts": {
+    "setup": "node server/setup.mjs",
+    "dev": "npm run dev -w server",
+    "build": "npm run build -w server && npm run build -w plugin",
+    "start": "npm start -w server",
+    "test": "npm test -w server && npm test -w plugin",
+    "check": "npm run typecheck -w server && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
+  }
+}

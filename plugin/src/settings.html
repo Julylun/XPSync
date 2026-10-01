@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>XPSync · Cài đặt</title>
+    <style>
+      body {
+        font-family: var(--font-primary-stack, system-ui);
+        background: var(--bg, #f7f9f5);
+        color: var(--text-color, #183a36);
+        padding: 28px;
+        margin: auto;
+        max-width: 1000px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 26px;
+      }
+      h1 {
+        font-size: 28px;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 17px;
+        margin: 0 0 20px;
+      }
+      p {
+        line-height: 1.6;
+      }
+      .subtitle,
+      small {
+        color: var(--text-color-muted, #74817e);
+        font-size: 12px;
+      }
+      .card {
+        padding: 24px;
+        margin: 18px 0;
+        background: var(--card-bg, #fff);
+        border: 1px solid var(--divider-color, #dfe6df);
+        border-radius: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+      }
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 13px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--divider-color, #d7e1da);
+        border-radius: 8px;
+        color: inherit;
+        background: var(--bg, #fff);
+        font: inherit;
+      }
+      button {
+        padding: 10px 14px;
+        border: 1px solid var(--divider-color, #d7e1da);
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 12px;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+      .btn-primary {
+        background: var(--c-primary, #215c4f);
+        color: white;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+      .mapping {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr auto;
+        gap: 12px;
+        border-top: 1px solid var(--divider-color, #e0e8e2);
+        padding: 18px 0;
+      }
+      .mapping small {
+        grid-column: 1/-1;
+      }
+      .status {
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: var(--card-bg, #e4efe7);
+        font-size: 12px;
+      }
+      .error {
+        color: var(--c-warn, #bd3d32);
+      }
+      #feedback {
+        min-height: 24px;
+        font-size: 13px;
+      }
+      #activity {
+        padding-left: 20px;
+        font-size: 12px;
+        line-height: 1.8;
+      }
+      #activity li {
+        padding: 5px 0;
+      }
+      button:focus-visible,
+      input:focus,
+      select:focus {
+        outline: 2px solid var(--c-primary, #215c4f);
+        outline-offset: 2px;
+      }
+      @media (max-width: 650px) {
+        body {
+          padding: 16px;
+        }
+        .grid,
+        .mapping {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          padding: 18px;
+        }
+        header {
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>XPSync</h1>
+        <div class="subtitle">Kết nối công việc. Đồng bộ cùng nhóm.</div>
+      </div>
+      <span id="overall-status" class="status">Đang tải…</span>
+    </header>
+    <form id="settings-form">
+      <section class="card">
+        <h2>01 · Kết nối server</h2>
+        <div class="grid">
+          <label
+            >Địa chỉ server<input
+              id="server-url"
+              type="url"
+              required
+              placeholder="http://192.168.1.100:3001" /></label
+          ><label
+            >Tên của bạn<input id="username" required maxlength="80" placeholder="Alice"
+          /></label>
+        </div>
+        <p class="subtitle">Dùng HTTPS nếu Super Productivity đang mở trên trang HTTPS.</p>
+      </section>
+      <section class="card">
+        <h2>02 · Ghép nối dự án</h2>
+        <p class="subtitle">
+          Chọn dự án trên máy và nhập API key do quản trị viên cung cấp. Các task hiện có sẽ được
+          hợp nhất với dự án server.
+        </p>
+        <div id="mappings"></div>
+        <div class="toolbar">
+          <button type="button" id="add-mapping">＋ Thêm mapping</button
+          ><button type="button" id="new-local-project">Tạo dự án cục bộ</button>
+        </div>
+      </section>
+      <div class="toolbar">
+        <button class="btn-primary" id="save">Lưu & Kết nối</button
+        ><button type="button" id="force-sync">Sync ngay bây giờ</button>
+      </div>
+      <p id="feedback" role="status"></p>
+    </form>
+    <section class="card">
+      <h2>Hoạt động gần đây</h2>
+      <ul id="activity">
+        <li>Chưa có hoạt động.</li>
+      </ul>
+      <p class="subtitle">
+        API key được lưu riêng trên thiết bị. Nhập lại key khi dùng thiết bị khác. Task đã lưu trữ
+        (archive) được giữ cục bộ.
+      </p>
+    </section>
+    <script>
+      /* XPSYNC_SETTINGS_SCRIPT */
+    </script>
+  </body>
+</html>

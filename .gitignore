@@ -1,0 +1,12 @@
+node_modules/
+.npm-cache/
+server/dist/
+server/data/
+*.db
+*.db-shm
+*.db-wal
+.env
+plugin/xpsync.zip
+plugin/plugin.js
+plugin/index.html
+artifacts/
