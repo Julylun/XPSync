@@ -87,14 +87,14 @@ ZIP có đúng bốn file ở thư mục gốc: `manifest.json`, `plugin.js`, `i
 
 | Biến             | Mặc định / yêu cầu                                                 |
 | ---------------- | ------------------------------------------------------------------ |
-| `HOST`           | `127.0.0.1`; dùng `0.0.0.0` để phục vụ LAN                         |
+| `HOST`           | `0.0.0.0`, lắng nghe trên mọi địa chỉ mạng                         |
 | `PORT`           | `3001`                                                             |
 | `DB_PATH`        | `./data/xpsync.db`, tính từ thư mục `server/` khi dùng npm scripts |
 | `JWT_SECRET`     | Bắt buộc, tối thiểu 32 ký tự ngẫu nhiên                            |
 | `SETUP_TOKEN`    | Token ngẫu nhiên cho thiết lập admin đầu tiên                      |
 | `CLIENT_ORIGINS` | `*`, hoặc danh sách origin phân cách bằng dấu phẩy                 |
 
-Cho LAN: đổi `HOST=0.0.0.0`, cho phép cổng trên firewall, rồi dùng IP của máy chạy server. HTTP phù hợp mạng nội bộ tin cậy. Cho Internet: đặt reverse proxy HTTPS trước server và dùng WSS; ứng dụng SP trên HTTPS không kết nối được tới HTTP/WS do mixed content. Client dùng WebSocket/fetch của host renderer, chịu CSP và chính sách mạng của bản SP đang chạy.
+Cho LAN: server mặc định lắng nghe trên `0.0.0.0`; cho phép cổng trên firewall, rồi dùng IP của máy chạy server. HTTP phù hợp mạng nội bộ tin cậy. Cho Internet: đặt reverse proxy HTTPS trước server và dùng WSS; ứng dụng SP trên HTTPS không kết nối được tới HTTP/WS do mixed content. Client dùng WebSocket/fetch của host renderer, chịu CSP và chính sách mạng của bản SP đang chạy.
 
 Ví dụ Nginx trong `server` HTTPS đã có certificate:
 

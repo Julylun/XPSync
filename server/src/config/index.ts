@@ -14,7 +14,7 @@ export function loadConfig(): Config {
   const port = Number(process.env.PORT ?? 3001);
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
   return {
-    host: process.env.HOST ?? '127.0.0.1',
+    host: process.env.HOST ?? '0.0.0.0',
     port,
     dbPath: resolve(process.env.DB_PATH ?? './data/xpsync.db'),
     jwtSecret,
